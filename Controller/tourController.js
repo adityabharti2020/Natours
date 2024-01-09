@@ -3,6 +3,7 @@ const Tour = require('../Model/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+
 // const fs = require('fs');
 // const filePath = path.join(
 //   __dirname,
@@ -36,7 +37,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAlltours = catchAsync(async (req, res) => {
+exports.getAlltours = catchAsync(async (req, res, next) => {
   // try {
   // console.log(req.query);
 
@@ -89,6 +90,8 @@ exports.getAlltours = catchAsync(async (req, res) => {
   //   if (skip >= numTours) throw new Error('This page does not exist');
   // }
   // Excute the query
+
+  // try {
   const Features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
@@ -112,9 +115,10 @@ exports.getAlltours = catchAsync(async (req, res) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
+  // try {
   const tour = await Tour.findById(req.params.id);
   if (!tour) {
-    return next(new AppError('no tour found with this ID ', 404));
+    return next(new AppError('No tour found with that ID', 404));
   }
   res.status(200).json({
     status: 'success',
@@ -122,8 +126,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
       tour,
     },
   });
-  // try {
-
   // } catch (error) {
   //   res.status(404).json({
   //     status: 'failed',
@@ -133,17 +135,19 @@ exports.getTour = catchAsync(async (req, res, next) => {
 });
 
 exports.createTour = catchAsync(async (req, res, next) => {
+  // try {
   const newTour = await Tour.create(req.body);
-  res.status(200).json({
+  // if (!newTour) {
+  //   return next(new AppError('no tour found with this ID ', 404));
+  // }
+  res.status(201).json({
     status: 'success',
     data: {
       tour: newTour,
     },
   });
-  // try {
-
   // } catch (error) {
-  //   res.status(400).json({
+  //   res.status(404).json({
   //     status: 'failed',
   //     message: error,
   //   });
@@ -151,16 +155,16 @@ exports.createTour = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
+  // try {
   const tour = await Tour.findByIdAndDelete(req.params.id);
+  console.log(tour);
   if (!tour) {
-    return next(new AppError('no tour found with this ID ', 404));
+    return next(new AppError('No tour found with that ID', 404));
   }
-  res.status(200).json({
+  res.status(204).json({
     status: 'deleted successfully',
     data: { tour },
   });
-  // try {
-
   // } catch (error) {
   //   res.status(400).json({
   //     status: 'failed',
@@ -169,19 +173,18 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
   // }
 });
 exports.updateTour = catchAsync(async (req, res, next) => {
+  // try {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
   if (!tour) {
-    return next(new AppError('no tour found with this ID ', 404));
+    return next(new AppError('No tour found with that ID', 404));
   }
   res.status(200).json({
     status: 'successfully updated',
     data: { tour },
   });
-  // try {
-
   // } catch (error) {
   //   res.status(404).json({
   //     status: 'failed',
@@ -191,6 +194,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
+  // try {
   const stats = await Tour.aggregate([
     {
       $match: { ratingAverages: { $gte: 4.1 } },
@@ -221,8 +225,6 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
       stats,
     },
   });
-  // try {
-
   // } catch (error) {
   //   res.status(404).json({
   //     status: 'failed',
@@ -287,6 +289,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
 // };
 
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+  // try {
   const year = req.params.year * 1; //2021
   const plan = await Tour.aggregate([
     {
@@ -328,8 +331,6 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
       plan,
     },
   });
-  // try {
-
   // } catch (error) {
   //   res.status(404).json({
   //     status: 'failed',

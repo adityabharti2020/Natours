@@ -11,11 +11,16 @@ const app = express();
 if (process.env.NODE_ENV === 'devlopment') {
   app.use(morgan('dev'));
 }
+if(process.env.NODE_ENV === 'production'){
+  app.use(morgan('tiny'));
+
+}
 app.use(express.json());
 app.use((req, res, next) => {
   // console.log("hello from middleware")
   req.requestTime = new Date().toISOString();
   next();
+  // console.log(x)
 }); //medilware that modify the incoming req data
 app.use(express.static(`${__dirname}/public`));
 // 2.Route Handlers
