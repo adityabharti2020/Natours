@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
 const AppError = require('./utils/appError');
-const globelErrorHandler =require('./Controller/errorController')
+const globelErrorHandler = require('./Controller/errorController');
 
 const app = express();
 
@@ -11,16 +11,15 @@ const app = express();
 if (process.env.NODE_ENV === 'devlopment') {
   app.use(morgan('dev'));
 }
-if(process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production') {
   app.use(morgan('tiny'));
-
 }
 app.use(express.json());
 app.use((req, res, next) => {
   // console.log("hello from middleware")
   req.requestTime = new Date().toISOString();
+  // console.log(req.headers);
   next();
-  // console.log(x)
 }); //medilware that modify the incoming req data
 app.use(express.static(`${__dirname}/public`));
 // 2.Route Handlers

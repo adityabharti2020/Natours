@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -15,11 +16,16 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'please provide a valid email'],
   },
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'please provide a password'],
     minlength: 8,
-    select:false
+    select: false,
   },
   passwordCofirm: {
     type: String,
@@ -31,6 +37,9 @@ const userSchema = new mongoose.Schema({
       message: 'password are not same',
     },
   },
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetTokenExpires: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -44,9 +53,35 @@ userSchema.pre('save', async function (next) {
   this.passwordCofirm = undefined;
   next();
 });
-
-userSchema.methods.correctPassword = async function(candidatePassword,userPassword){
-  return await bcrypt.compare(candidatePassword,userPassword)
-}
+//instance to match password with email at login
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+//instance to changed password
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10,
+    ); //here 10 is base
+    // console.log("password changed details",changedTimeStamp,JWTTimestamp)
+    return JWTTimestamp < changedTimeStamp; //100<200
+  }
+  return false;
+};
+// reset pasword instance
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+    console.log({resetToken},this.passwordResetToken);
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken
+};
 const User = mongoose.model('User', userSchema);
 module.exports = User;

@@ -6,6 +6,8 @@ const router = express.Router(); //it will work like middleWare
 
 router.post('/signUp',authController.signUp);
 router.post('/logIn',authController.login);
+router.post('/forgotPassword',authController.login); //only recives email address
+router.post('/resetPassword',authController.login);  //recives token as well as password
 // router
 //   .route('/signUp')
 //   .post(authController.signUp);
