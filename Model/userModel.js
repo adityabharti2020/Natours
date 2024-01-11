@@ -53,6 +53,11 @@ userSchema.pre('save', async function (next) {
   this.passwordCofirm = undefined;
   next();
 });
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000; //1000 is 1 second
+  next();
+});
 //instance to match password with email at login
 userSchema.methods.correctPassword = async function (
   candidatePassword,
@@ -79,9 +84,9 @@ userSchema.methods.createPasswordResetToken = function () {
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-    console.log({resetToken},this.passwordResetToken);
+  console.log({ resetToken }, this.passwordResetToken);
   this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
-  return resetToken
+  return resetToken;
 };
 const User = mongoose.model('User', userSchema);
 module.exports = User;

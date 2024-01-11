@@ -6,14 +6,15 @@ const router = express.Router(); //it will work like middleWare
 
 router.post('/signUp',authController.signUp);
 router.post('/logIn',authController.login);
-router.post('/forgotPassword',authController.login); //only recives email address
-router.post('/resetPassword',authController.login);  //recives token as well as password
+router.post('/forgotPassword',authController.forgotPassword); //only recives email address
+router.patch('/resetPassword',authController.resetPassword);  //recives token as well as password
+router.patch('/updateMyPassword',authController.protect,authController.updatePassword);
 // router
 //   .route('/signUp')
 //   .post(authController.signUp);
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(userController.getAllUsers) 
   .post(userController.createUser);
 router
   .route('/:id')
