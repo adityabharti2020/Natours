@@ -29,6 +29,7 @@ class APIFeatures {
     }
     sort(){
       if (this.queryString.sort) {
+        console.log(this.queryString.sort)
         const sortBy = this.queryString.sort.split(',').join(' ');
         console.log(sortBy);
         // query = query.sort(req.query.sort) for sorting as acsending and decsending

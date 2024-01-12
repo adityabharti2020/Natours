@@ -14,7 +14,16 @@ const signToken = (id) => {
 
 const createSendToken = (user, statusCode, res, message) => {
   const token = signToken(user._id);
-
+  const cookieOption = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000, // 60 min,60sec,1000 milisec
+    ),
+    // secure: true, Cookie will only send to the encrepted connection this will use in production.
+    httpOnly: true, // we set this so that cookie can not be accessed or modified in anyway by the browser
+  };
+  if ((process.env.NODE_ENV = 'production')) cookieOption.secure = true;
+  res.cookie('jwt', token, cookieOption);
+  user.password = undefined;
   res.status(statusCode).json({
     status: message,
     token,
@@ -43,7 +52,7 @@ exports.signUp = catchAsync(async (req, res) => {
     passwordCofirm,
     passwordChangedAt,
   });
-  createSendToken(newUser, 201, res,"Sign up successfully");
+  createSendToken(newUser, 201, res, 'Sign up successfully');
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -59,7 +68,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
   // 3. if everything ok send token to the client
-  createSendToken(user, 200, res,"login Successfully");
+  createSendToken(user, 200, res, 'login Successfully');
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -182,7 +191,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //3.update changedPasswordAt property for the user
 
   //4.Log the user in , send JWT
-  createSendToken(user, 201, res );
+  createSendToken(user, 201, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -199,5 +208,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
   //here user.findByIdAndUpdate will not work as intended
   // 4. log user in ,send jwt
-  createSendToken(user, 201, res,"updated successfully");
+  createSendToken(user, 201, res, 'updated successfully');
 });

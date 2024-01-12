@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetTokenExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -77,6 +82,13 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
   return false;
 };
+// Query middleware at the delete user route
+userSchema.pre(/^find/, function (next) {
+  // This points to correct query
+  // this.find({ active: true });  will not use this because we set active feature later so some user have without active features.
+  this.find({ active: { $ne: false } });
+  next();
+});
 // reset pasword instance
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
