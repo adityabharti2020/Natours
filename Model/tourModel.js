@@ -9,8 +9,14 @@ const TourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
-      maxlength:[40,'A tour name must be less than 40 or equal to 40 character'],
-      minlength:[10,'A tour name must be greater than 10 or equal to 40 character']
+      maxlength: [
+        40,
+        'A tour name must be less than 40 or equal to 40 character',
+      ],
+      minlength: [
+        10,
+        'A tour name must be greater than 10 or equal to 40 character',
+      ],
       // validate:[validator.isAlpha,'Tour Name must only contain character']
     },
     slug: String,
@@ -26,33 +32,33 @@ const TourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have difficulty level'],
       trim: true,
-      enum:{
-        values:['easy','medium','difficult'],
-        message:"Difficulty is either easy , medium , difficult",
-      }
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty is either easy , medium , difficult',
+      },
     },
     price: {
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount:{
-      type:Number,
-      validate:{
-        validator:function(val){
-        return val < this.price  //250<200
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          return val < this.price; //250<200
+        },
+        message: 'discount price {VALUE} should be less than the actual price',
       },
-      message:"discount price {VALUE} should be less than the actual price"
-    }
-  },
+    },
     ratingAverages: {
       type: Number,
       default: 4.5,
-      validate:{
-        validator:function(val){
-        return val <= 5   //250<200
+      validate: {
+        validator: function (val) {
+          return val <= 5; //250<200
+        },
+        message: 'ratingAverages should be less than 5',
       },
-      message:"ratingAverages should be less than 5"
-    }
     },
     ratingQuantity: {
       type: Number,
@@ -82,6 +88,30 @@ const TourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number], //this will require array of number first will be latitute and 2nd will be longitute
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   // {timestamps:true}
   {
