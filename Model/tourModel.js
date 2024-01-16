@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+// const User = require('./userModel'); it will need at the time of embedding
 
 const TourSchema = new mongoose.Schema(
   {
@@ -112,6 +113,8 @@ const TourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    // guides: Array, it will use with embedding middleware to add multiple guide into guides
+    guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
   },
   // {timestamps:true}
   {
@@ -126,9 +129,15 @@ const TourSchema = new mongoose.Schema(
 TourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
-//Document middleware: runs before .save() and .create()
+// Document middleware: runs before .save() and .create()
 // TourSchema.pre('save', function (next) {
 //   this.slug = slugify(this.name, { lower: true });
+//   next();
+// });
+// performing embedding
+// TourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
 //   next();
 // });
 // TourSchema.pre('save', function (next) {
@@ -145,6 +154,11 @@ TourSchema.virtual('durationWeeks').get(function () {
 TourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
+  next();
+});
+//document middleware
+TourSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'guides', select: '-__v' });
   next();
 });
 TourSchema.post(/^find/, function (docs, next) {
