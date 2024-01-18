@@ -115,6 +115,7 @@ const TourSchema = new mongoose.Schema(
     ],
     // guides: Array, it will use with embedding middleware to add multiple guide into guides
     guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
+    // reviews: [{ type: mongoose.Schema.ObjectId, ref: 'Review' }], when we use virtual populate
   },
   // {timestamps:true}
   {
@@ -126,9 +127,15 @@ const TourSchema = new mongoose.Schema(
     },
   },
 );
+TourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour', //tour field of review schema
+  localField: '_id', //current id
+});
 TourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
 // Document middleware: runs before .save() and .create()
 // TourSchema.pre('save', function (next) {
 //   this.slug = slugify(this.name, { lower: true });

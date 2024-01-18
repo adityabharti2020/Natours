@@ -1,6 +1,7 @@
 const User = require('../Model/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -64,12 +65,7 @@ exports.createUser = (req, res) => {
     message: 'this rote is not yet defined',
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this rote is not yet defined',
-  });
-};
+exports.deleteUser = factory.deleteOne(User)
 exports.updateUser = (req, res) => {
   res.status(500).json({
     status: 'error',

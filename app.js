@@ -7,6 +7,7 @@ const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const tourRouter = require('./Routes/tourRoutes');
 const userRouter = require('./Routes/userRoutes');
+const reviewRouter = require('./Routes/reviewRoutes');
 const AppError = require('./utils/appError');
 const globelErrorHandler = require('./Controller/errorController');
 
@@ -62,6 +63,7 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //Operational error
 // unhandled routes it wiil written at the end if we will write this at above then every routes will respose this route because of this start "*"
