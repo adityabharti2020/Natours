@@ -21,10 +21,18 @@ Router.route('/top-5-cheap').get(
   tourController.getAlltours,
 );
 Router.route('/tour-stats').get(tourController.getTourStats);
-Router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+Router.route('/monthly-plan/:year').get(
+  authController.protect,
+  authController.restrictTo('admin', 'lead-guide', 'guide'),
+  tourController.getMonthlyPlan,
+);
 Router.route('/')
-  .get(authController.protect, tourController.getAlltours)
-  .post(tourController.createTour);
+  .get(tourController.getAlltours)
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createTour,
+  );
 // .post(tourController.checkbody,tourController.createTour);
 Router.route('/:id')
   .get(tourController.getTour)
@@ -33,6 +41,10 @@ Router.route('/:id')
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour,
   ); //here admi is role of user
-Router.route('/:id').patch(tourController.updateTour);
+Router.route('/:id').patch(
+  authController.protect,
+  authController.restrictTo('admin', 'lead-guide'),
+  tourController.updateTour,
+);
 
 module.exports = Router;

@@ -127,6 +127,8 @@ const TourSchema = new mongoose.Schema(
     },
   },
 );
+TourSchema.index({ price: 1, ratingsAverage: -1 });
+TourSchema.index({ slug: 1 });
 TourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour', //tour field of review schema
