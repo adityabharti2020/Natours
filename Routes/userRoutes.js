@@ -15,14 +15,14 @@ router.use(authController.protect);
 router.patch('/updateMyPassword', authController.updatePassword);
 router.patch('/updateMe', userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
-// router
+// router 
 //   .route('/signUp')
 //   .post(authController.signUp);
 
 router.use(authController.restrictTo('admin'));
 
 router
-  .route('/')
+  .route('/') 
   .get(userController.getAllUsers)
   .post(userController.createUser);
 router

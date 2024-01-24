@@ -63,7 +63,8 @@ exports.getAll = (Model) =>
       .sort()
       .limitingField()
       .paginate();
-    const doc = await Features.query.explain();
+    // const doc = await Features.query.explain();
+    const doc = await Features.query;
     // const queryString = Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
     res.status(200).json({
       status: 'success',

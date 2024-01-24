@@ -54,12 +54,9 @@ const TourSchema = new mongoose.Schema(
     ratingAverages: {
       type: Number,
       default: 4.5,
-      validate: {
-        validator: function (val) {
-          return val <= 5; //250<200
-        },
-        message: 'ratingAverages should be less than 5',
-      },
+      min: [1, 'Ratings must be above 1.0'],
+      max: [5, 'Ratings must be below 5.0'],
+      set: (val) => Math.round(val * 10) / 10, //4.666666 , 46.6666 , 47 , 4.7
     },
     ratingQuantity: {
       type: Number,
@@ -129,6 +126,7 @@ const TourSchema = new mongoose.Schema(
 );
 TourSchema.index({ price: 1, ratingsAverage: -1 });
 TourSchema.index({ slug: 1 });
+TourSchema.index({ startLocation: '2dsphere' });
 TourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour', //tour field of review schema
@@ -176,12 +174,12 @@ TourSchema.post(/^find/, function (docs, next) {
   next();
 });
 // Aggregation middleware
-TourSchema.pre('aggregate', function (next) {
-  //in this function this keyword will represent the current aggeregation document
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline());
-  next();
-});
+// TourSchema.pre('aggregate', function (next) {
+//   //in this function this keyword will represent the current aggeregation document
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', TourSchema);
 module.exports = Tour;

@@ -26,6 +26,14 @@ Router.route('/monthly-plan/:year').get(
   authController.restrictTo('admin', 'lead-guide', 'guide'),
   tourController.getMonthlyPlan,
 );
+// /tour-distance?distance=233,center=-40,45,unit=mi
+// /tour-distance/233/center/-40,45/unit/mi
+Router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(
+  tourController.getToursWithIn,
+);
+// to measure the distance from the certain point to the others tours
+Router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
+// we can type in postman in the place of unit mi or km
 Router.route('/')
   .get(tourController.getAlltours)
   .post(
